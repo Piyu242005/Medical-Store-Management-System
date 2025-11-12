@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Sale #{{ sale.invoice_number }} - Medical Store{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Sale #{{ sale.invoice_number }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="#" class="btn btn-sm btn-outline-secondary me-2" onclick="window.print()">
+            <i class="fas fa-print me-1"></i> Print
+        </a>
+        <a href="{{ url_for('sales') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Sales
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-receipt me-1"></i>
+                    Sale Details
+                </div>
+                <div>
+                    <span class="badge bg-{% if sale.payment_method == 'Cash' %}success{% else %}info{% endif %}">
+                        {{ sale.payment_method }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Bill To</h6>
+                        <h5>{{ sale.customer_name }}</h5>
+                        {% if sale.customer_contact %}
+                        <p class="mb-1">{{ sale.customer_contact }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <h6 class="text-muted">Invoice #</h6>
+                        <h5>{{ sale.invoice_number }}</h5>
+                        <p class="mb-1">{{ sale.sale_date.strftime('%B %d, %Y %I:%M %p') }}</p>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Batch #</th>
+                                <th class="text-end">Qty</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in sale.items %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ item.medicine.name }}</td>
+                                <td>{{ item.batch_number or 'N/A' }}</td>
+                                <td class="text-end">{{ item.quantity }}</td>
+                                <td class="text-end">₹{{ "%.2f"|format(item.unit_price) }}</td>
+                                <td class="text-end">₹{{ "%.2f"|format(item.total_price) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" class="text-end fw-bold">Subtotal:</td>
+                                <td class="text-end">₹{{ "%.2f"|format(sale.total_amount - sale.tax_amount + sale.discount) }}</td>
+                            </tr>
+                            {% if sale.discount > 0 %}
+                            <tr>
+                                <td colspan="5" class="text-end fw-bold">Discount ({{ "%.0f"|format((sale.discount / (sale.total_amount - sale.tax_amount + sale.discount)) * 100) }}%):</td>
+                                <td class="text-end text-danger">-₹{{ "%.2f"|format(sale.discount) }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if sale.tax_amount > 0 %}
+                            <tr>
+                                <td colspan="5" class="text-end fw-bold">Tax ({{ "%.0f"|format((sale.tax_amount / (sale.total_amount - sale.tax_amount + sale.discount)) * 100) }}%):</td>
+                                <td class="text-end">₹{{ "%.2f"|format(sale.tax_amount) }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr class="table-active">
+                                <td colspan="5" class="text-end fw-bold">Total Amount:</td>
+                                <td class="text-end fw-bold">₹{{ "%.2f"|format(sale.total_amount) }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Notes:</h6>
+                    <p class="text-muted mb-0">Thank you for your business. Please keep this invoice for your records.</p>
+                </div>
+                
+                <div class="mt-4 text-center d-print-none">
+                    <button class="btn btn-primary me-2" onclick="window.print()">
+                        <i class="fas fa-print me-1"></i> Print Invoice
+                    </button>
+                    <a href="{{ url_for('sales') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Sales
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

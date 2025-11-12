@@ -1,0 +1,548 @@
+{% extends "base.html" %}
+
+{% block title %}New Sale - Medical Store{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">New Sale</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('sales') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Cancel
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-shopping-cart me-1"></i>
+                Sale Items
+            </div>
+            <div class="card-body">
+                <form id="saleForm" method="POST" action="{{ url_for('new_sale') }}">
+                    <div class="table-responsive">
+                        <table class="table" id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Batch</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsBody">
+                                <!-- Items will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-primary" id="addItemBtn">
+                            <i class="fas fa-plus me-1"></i> Add Item
+                        </button>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="customer_name" class="form-label">Customer Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="customer_contact" class="form-label">Contact Number</label>
+                                <input type="text" class="form-control" id="customer_contact" name="customer_contact">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="payment_method" class="form-label">Payment Method <span class="text-danger">*</span></label>
+                                <select class="form-select" id="payment_method" name="payment_method" required>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="UPI">UPI</option>
+                                    <option value="Net Banking">Net Banking</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="discount" class="form-label">Discount (%)</label>
+                                        <input type="number" class="form-control" id="discount" name="discount" min="0" max="100" value="0">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="tax_percentage" class="form-label">Tax (%)</label>
+                                        <input type="number" class="form-control" id="tax_percentage" name="tax_percentage" min="0" max="100" value="5" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="reset" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-undo me-1"></i> Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="completeSaleBtn" disabled>
+                            <i class="fas fa-check-circle me-1"></i> Complete Sale
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-calculator me-1"></i>
+                Order Summary
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Discount: <span id="discountPercentage">0</span>%</span>
+                    <span id="discountAmount">-₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Tax: <span id="taxPercentage">5</span>%</span>
+                    <span id="taxAmount">₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between fw-bold fs-5 border-top pt-2">
+                    <span>Total:</span>
+                    <span id="totalAmount">₹0.00</span>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" class="form-control" id="amountPaid" placeholder="Amount Paid" min="0" step="0.01">
+                        <button class="btn btn-outline-secondary" type="button" id="fullAmountBtn">Full</button>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Change:</span>
+                        <span id="changeAmount">₹0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-search me-1"></i>
+                Search Medicines
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="searchMedicine" placeholder="Search by name or ID...">
+                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="list-group" id="medicineList" style="max-height: 300px; overflow-y: auto;">
+                    {% for medicine in medicines %}
+                    <a href="#" class="list-group-item list-group-item-action medicine-item" 
+                       data-id="{{ medicine.id }}"
+                       data-name="{{ medicine.name }}"
+                       data-batch="{{ medicine.batch_number or '' }}"
+                       data-price="{{ medicine.price }}"
+                       data-stock="{{ medicine.quantity }}">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ medicine.name }}</h6>
+                            <small>Stock: {{ medicine.quantity }}</small>
+                        </div>
+                        <p class="mb-1">
+                            <small class="text-muted">
+                                Batch: {{ medicine.batch_number or 'N/A' }} | 
+                                ₹{{ "%.2f"|format(medicine.price) }}
+                            </small>
+                        </p>
+                    </a>
+                    {% else %}
+                    <div class="text-center text-muted py-3">
+                        No medicines found in stock.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden template for new item row -->
+<template id="itemRowTemplate">
+    <tr class="item-row">
+        <td>
+            <input type="hidden" name="medicine_id[]" class="medicine-id">
+            <span class="medicine-name"></span>
+        </td>
+        <td>
+            <input type="text" class="form-control form-control-sm batch-number" name="batch_number[]" readonly>
+        </td>
+        <td>
+            <div class="input-group input-group-sm">
+                <span class="input-group-text">₹</span>
+                <input type="number" class="form-control price" name="price[]" min="0.01" step="0.01" required>
+            </div>
+        </td>
+        <td>
+            <div class="input-group input-group-sm" style="width: 100px;">
+                <button class="btn btn-outline-secondary btn-sm minus-btn" type="button">-</button>
+                <input type="number" class="form-control text-center quantity" name="quantity[]" min="1" value="1" required>
+                <button class="btn btn-outline-secondary btn-sm plus-btn" type="button">+</button>
+            </div>
+            <small class="text-muted stock-info"></small>
+        </td>
+        <td class="text-end">
+            <span class="item-total">₹0.00</span>
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-sm btn-outline-danger remove-item">
+                <i class="fas fa-times"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize variables
+        const itemRowTemplate = document.getElementById('itemRowTemplate');
+        const itemsBody = document.getElementById('itemsBody');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const completeSaleBtn = document.getElementById('completeSaleBtn');
+        const subtotalEl = document.getElementById('subtotal');
+        const discountEl = document.getElementById('discount');
+        const discountPercentageEl = document.getElementById('discountPercentage');
+        const discountAmountEl = document.getElementById('discountAmount');
+        const taxPercentageEl = document.getElementById('taxPercentage');
+        const taxAmountEl = document.getElementById('taxAmount');
+        const totalAmountEl = document.getElementById('totalAmount');
+        const amountPaidEl = document.getElementById('amountPaid');
+        const changeAmountEl = document.getElementById('changeAmount');
+        const fullAmountBtn = document.getElementById('fullAmountBtn');
+        const searchInput = document.getElementById('searchMedicine');
+        const medicineList = document.getElementById('medicineList');
+        const medicineItems = document.querySelectorAll('.medicine-item');
+        
+        let subtotal = 0;
+        let discount = 0;
+        let tax = 5; // Default tax rate
+        let total = 0;
+        
+        // Add item from medicine list
+        medicineList.addEventListener('click', function(e) {
+            const item = e.target.closest('.medicine-item');
+            if (!item) return;
+
+            e.preventDefault();
+
+            const id = item.dataset.id;
+            const name = item.dataset.name;
+            const batch = item.dataset.batch;
+            const price = parseFloat(item.dataset.price);
+            const stock = parseInt(item.dataset.stock);
+
+            // Check if item already exists in the cart
+            const existingItem = document.querySelector(`.medicine-id[value="${id}"]`);
+            if (existingItem) {
+                // Increase quantity if item exists
+                const row = existingItem.closest('.item-row');
+                const qtyInput = row.querySelector('.quantity');
+                const currentQty = parseInt(qtyInput.value);
+                if (currentQty < stock) {
+                    qtyInput.value = currentQty + 1;
+                    updateItemTotal(row);
+                    updateOrderSummary();
+                } else {
+                    alert(`Only ${stock} items available in stock.`);
+                }
+                return;
+            }
+
+            // Add new item row
+            addItemToCart(id, name, batch, price, stock);
+            updateOrderSummary();
+        });
+
+        // Handle clicking on "Select Medicine" in empty rows
+        itemsBody.addEventListener('click', function(e) {
+            if (e.target.classList.contains('medicine-name') && e.target.textContent === 'Select Medicine') {
+                e.preventDefault();
+                searchInput.focus();
+                document.getElementById('medicineList').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+        
+        // Add item to cart function
+        function addItemToCart(id, name, batch, price, stock) {
+            // Check if we have an empty row to replace, or create new one
+            let row = document.querySelector('.medicine-name:not(.filled)');
+            if (row && row.textContent === 'Select Medicine') {
+                // Replace empty row
+                row = row.closest('.item-row');
+            } else {
+                // Create new row
+                const clone = itemRowTemplate.content.cloneNode(true);
+                row = clone.querySelector('.item-row');
+                itemsBody.appendChild(row);
+            }
+
+            row.querySelector('.medicine-id').value = id;
+            row.querySelector('.medicine-name').textContent = name;
+            row.querySelector('.medicine-name').classList.add('filled');
+            row.querySelector('.medicine-name').style.cursor = 'default';
+            row.querySelector('.medicine-name').style.color = 'inherit';
+            row.querySelector('.batch-number').value = batch;
+            row.querySelector('.price').value = price.toFixed(2);
+            row.querySelector('.stock-info').textContent = `Stock: ${stock}`;
+
+            // Set max quantity to available stock
+            const qtyInput = row.querySelector('.quantity');
+            qtyInput.max = stock;
+
+            // Add event listeners
+            const minusBtn = row.querySelector('.minus-btn');
+            const plusBtn = row.querySelector('.plus-btn');
+            const removeBtn = row.querySelector('.remove-item');
+
+            minusBtn.addEventListener('click', () => {
+                if (parseInt(qtyInput.value) > 1) {
+                    qtyInput.value = parseInt(qtyInput.value) - 1;
+                    updateItemTotal(row);
+                    updateOrderSummary();
+                }
+            });
+
+            plusBtn.addEventListener('click', () => {
+                if (parseInt(qtyInput.value) < stock) {
+                    qtyInput.value = parseInt(qtyInput.value) + 1;
+                    updateItemTotal(row);
+                    updateOrderSummary();
+                } else {
+                    alert(`Only ${stock} items available in stock.`);
+                }
+            });
+
+            qtyInput.addEventListener('change', () => {
+                if (parseInt(qtyInput.value) > stock) {
+                    qtyInput.value = stock;
+                    alert(`Only ${stock} items available in stock.`);
+                } else if (parseInt(qtyInput.value) < 1) {
+                    qtyInput.value = 1;
+                }
+                updateItemTotal(row);
+                updateOrderSummary();
+            });
+
+            const priceInput = row.querySelector('.price');
+            priceInput.addEventListener('change', () => {
+                if (parseFloat(priceInput.value) < 0.01) {
+                    priceInput.value = '0.01';
+                }
+                updateItemTotal(row);
+                updateOrderSummary();
+            });
+
+            removeBtn.addEventListener('click', () => {
+                row.remove();
+                updateOrderSummary();
+                completeSaleBtn.disabled = itemsBody.children.length === 0;
+            });
+
+            updateItemTotal(row);
+            completeSaleBtn.disabled = false;
+        }
+        
+        // Update item total
+        function updateItemTotal(row) {
+            const price = parseFloat(row.querySelector('.price').value) || 0;
+            const quantity = parseInt(row.querySelector('.quantity').value) || 0;
+            const total = price * quantity;
+            row.querySelector('.item-total').textContent = `₹${total.toFixed(2)}`;
+        }
+        
+        // Update order summary
+        function updateOrderSummary() {
+            // Calculate subtotal
+            subtotal = 0;
+            document.querySelectorAll('.item-row').forEach(row => {
+                const price = parseFloat(row.querySelector('.price').value) || 0;
+                const quantity = parseInt(row.querySelector('.quantity').value) || 0;
+                subtotal += price * quantity;
+            });
+            
+            // Calculate discount
+            discount = parseFloat(discountEl.value) || 0;
+            const discountAmount = (subtotal * discount) / 100;
+            
+            // Calculate tax
+            const taxableAmount = subtotal - discountAmount;
+            const taxAmount = (taxableAmount * tax) / 100;
+            
+            // Calculate total
+            total = taxableAmount + taxAmount;
+            
+            // Update UI
+            subtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
+            discountPercentageEl.textContent = discount;
+            discountAmountEl.textContent = `-₹${discountAmount.toFixed(2)}`;
+            taxPercentageEl.textContent = tax;
+            taxAmountEl.textContent = `₹${taxAmount.toFixed(2)}`;
+            totalAmountEl.textContent = `₹${total.toFixed(2)}`;
+            
+            // Update amount paid if full amount button was clicked
+            if (amountPaidEl.value === '' || amountPaidEl.dataset.auto === 'true') {
+                amountPaidEl.value = total.toFixed(2);
+                amountPaidEl.dataset.auto = 'true';
+                updateChangeAmount();
+            }
+        }
+        
+        // Update change amount
+        function updateChangeAmount() {
+            const amountPaid = parseFloat(amountPaidEl.value) || 0;
+            const change = amountPaid - total;
+            changeAmountEl.textContent = `₹${Math.max(0, change).toFixed(2)}`;
+            
+            if (change < 0) {
+                changeAmountEl.classList.add('text-danger');
+                changeAmountEl.classList.remove('text-success');
+            } else {
+                changeAmountEl.classList.remove('text-danger');
+                changeAmountEl.classList.add('text-success');
+            }
+        }
+        
+        // Event listeners
+        discountEl.addEventListener('input', updateOrderSummary);
+        amountPaidEl.addEventListener('input', function() {
+            this.dataset.auto = 'false';
+            updateChangeAmount();
+        });
+        
+        fullAmountBtn.addEventListener('click', function() {
+            amountPaidEl.value = total.toFixed(2);
+            amountPaidEl.dataset.auto = 'true';
+            updateChangeAmount();
+        });
+        
+        // Search medicine
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            medicineItems.forEach(item => {
+                const name = item.dataset.name.toLowerCase();
+                const batch = item.dataset.batch ? item.dataset.batch.toLowerCase() : '';
+                const id = item.dataset.id;
+                
+                if (name.includes(searchTerm) || batch.includes(searchTerm) || id.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Form submission
+        document.getElementById('saleForm').addEventListener('submit', function(e) {
+            if (itemsBody.children.length === 0) {
+                e.preventDefault();
+                alert('Please add at least one item to the sale.');
+                return false;
+            }
+            
+            // Disable the button to prevent double submission
+            completeSaleBtn.disabled = true;
+            completeSaleBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Processing...';
+            
+            return true;
+        });
+        
+        // Add item button - adds an empty row for manual entry
+        addItemBtn.addEventListener('click', function() {
+            addEmptyItemRow();
+        });
+
+        // Function to add empty item row for manual entry
+        function addEmptyItemRow() {
+            const clone = itemRowTemplate.content.cloneNode(true);
+            const row = clone.querySelector('.item-row');
+
+            // Clear values for manual entry
+            row.querySelector('.medicine-id').value = '';
+            row.querySelector('.medicine-name').textContent = 'Select Medicine';
+            row.querySelector('.batch-number').value = '';
+            row.querySelector('.price').value = '0.00';
+            row.querySelector('.quantity').value = '1';
+            row.querySelector('.stock-info').textContent = 'Manual entry';
+
+            // Make medicine name clickable for selection
+            const medicineNameEl = row.querySelector('.medicine-name');
+            medicineNameEl.style.cursor = 'pointer';
+            medicineNameEl.style.color = '#007bff';
+            medicineNameEl.addEventListener('click', function() {
+                // Focus search input and scroll to medicine list
+                searchInput.focus();
+                document.getElementById('medicineList').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // Add event listeners
+            const minusBtn = row.querySelector('.minus-btn');
+            const plusBtn = row.querySelector('.plus-btn');
+            const removeBtn = row.querySelector('.remove-item');
+            const qtyInput = row.querySelector('.quantity');
+            const priceInput = row.querySelector('.price');
+
+            minusBtn.addEventListener('click', () => {
+                if (parseInt(qtyInput.value) > 1) {
+                    qtyInput.value = parseInt(qtyInput.value) - 1;
+                    updateItemTotal(row);
+                    updateOrderSummary();
+                }
+            });
+
+            plusBtn.addEventListener('click', () => {
+                qtyInput.value = parseInt(qtyInput.value) + 1;
+                updateItemTotal(row);
+                updateOrderSummary();
+            });
+
+            qtyInput.addEventListener('change', () => {
+                if (parseInt(qtyInput.value) < 1) {
+                    qtyInput.value = 1;
+                }
+                updateItemTotal(row);
+                updateOrderSummary();
+            });
+
+            priceInput.addEventListener('change', () => {
+                if (parseFloat(priceInput.value) < 0) {
+                    priceInput.value = '0.00';
+                }
+                updateItemTotal(row);
+                updateOrderSummary();
+            });
+
+            removeBtn.addEventListener('click', () => {
+                row.remove();
+                updateOrderSummary();
+                completeSaleBtn.disabled = itemsBody.children.length === 0;
+            });
+
+            itemsBody.appendChild(row);
+            updateItemTotal(row);
+            completeSaleBtn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

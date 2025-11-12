@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}View Supplier - {{ supplier.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ supplier.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('suppliers') }}" class="btn btn-sm btn-warning me-2">
+            <i class="fas fa-edit me-1"></i> Back
+        </a>
+        <a href="{{ url_for('suppliers') }}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Suppliers
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-info-circle me-1"></i>
+                Supplier Details
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Name:</dt>
+                    <dd class="col-sm-9">{{ supplier.name }}</dd>
+
+                    <dt class="col-sm-3">Contact:</dt>
+                    <dd class="col-sm-9">{{ supplier.contact }}</dd>
+
+                    <dt class="col-sm-3">Email:</dt>
+                    <dd class="col-sm-9">{{ supplier.email or 'N/A' }}</dd>
+
+                    <dt class="col-sm-3">Phone:</dt>
+                    <dd class="col-sm-9">{{ supplier.phone or 'N/A' }}</dd>
+
+                    <dt class="col-sm-3">Address:</dt>
+                    <dd class="col-sm-9">{{ supplier.address or 'N/A' }}</dd>
+
+                    <dt class="col-sm-3">GST Number:</dt>
+                    <dd class="col-sm-9">{{ supplier.gst_number or 'N/A' }}</dd>
+
+                    <dt class="col-sm-3">Created:</dt>
+                    <dd class="col-sm-9">{{ supplier.created_at.strftime('%Y-%m-%d %H:%M') }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-pills me-1"></i>
+                Associated Medicines
+            </div>
+            <div class="card-body">
+                {% if medicines %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Batch #</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Expiry</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for medicine in medicines %}
+                            <tr>
+                                <td>{{ medicine.name }}</td>
+                                <td>{{ medicine.batch_number or 'N/A' }}</td>
+                                <td>{{ medicine.quantity }}</td>
+                                <td>₹{{ "%.2f"|format(medicine.price) }}</td>
+                                <td>{{ medicine.expiry_date.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No medicines associated with this supplier.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-shopping-cart me-1"></i>
+                Recent Purchases
+            </div>
+            <div class="card-body">
+                {% if purchases %}
+                <div class="list-group list-group-flush">
+                    {% for purchase in purchases %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ purchase.invoice_number }}</h6>
+                            <small>{{ purchase.purchase_date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        <p class="mb-1">₹{{ "%.2f"|format(purchase.total_amount) }}</p>
+                        <small class="text-muted">{{ purchase.payment_status }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No recent purchases.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Actions
+            </div>
+            <div class="card-body">
+                <button class="btn btn-danger w-100" onclick="if(confirm('Delete this supplier?')) { alert('Feature not yet implemented'); }">
+                    <i class="fas fa-trash me-1"></i> Delete Supplier
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editSupplier(id) {
+    // For now, redirect to add supplier page with edit mode
+    window.location.href = `/supplier/edit/${id}`;
+}
+
+function deleteSupplier(id, name) {
+    if (confirm(`Are you sure you want to delete supplier "${name}"? This action cannot be undone and will affect all associated medicines and purchases.`)) {
+        fetch(`/supplier/${id}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '{{ url_for("suppliers") }}';
+            } else {
+                alert('Error deleting supplier: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the supplier.');
+        });
+    }
+}
+</script>
+{% endblock %}

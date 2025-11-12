@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Medical Store{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Reports & Analytics</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="exportSalesReport">
+                <i class="fas fa-file-export me-1"></i> Export Sales
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="exportInventoryReport">
+                <i class="fas fa-file-export me-1"></i> Export Inventory
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-line me-1"></i>
+                Sales Overview ({{ start_date.strftime('%B %Y') }})
+            </div>
+            <div class="card-body">
+                <canvas id="salesChart" height="300"></canvas>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Top Selling Medicines
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Medicine</th>
+                                <th class="text-end">Quantity Sold</th>
+                                <th class="text-end">Total Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in top_medicines %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ item.name }}</td>
+                                <td class="text-end">{{ item.total_quantity }}</td>
+                                <td class="text-end">₹{{ "%.2f"|format(item.total_sales) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">No sales data available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Low Stock Alerts
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% if low_stock %}
+                        {% for item in low_stock %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ item.name }}</h6>
+                                <span class="badge bg-{% if item.quantity <= 3 %}danger{% else %}warning{% endif %}">
+                                    {{ item.quantity }} left
+                                </span>
+                            </div>
+                            <small class="text-muted">
+                                {% if item.supplier_ref %}
+                                    Supplier: {{ item.supplier_ref.name }}
+                                {% else %}
+                                    No supplier assigned
+                                {% endif %}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="p-3 text-center text-muted">
+                            <i class="fas fa-check-circle fa-2x mb-2 text-success"></i>
+                            <p class="mb-0">All items are well stocked!</p>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if low_stock %}
+                <div class="card-footer text-end">
+                    <a href="{{ url_for('medicines') }}" class="btn btn-sm btn-outline-primary">
+                        View All Medicines
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-credit-card me-1"></i>
+                Payment Methods
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for method in payment_methods %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ method.payment_method }}</h6>
+                                <small class="text-muted">{{ method.sale_count }} transactions</small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold">₹{{ "%.2f"|format(method.total_amount) }}</div>
+                                <small class="text-muted">
+                                    {{ "%.1f"|format((method.total_amount / (payment_methods|sum(attribute='total_amount'))) * 100) }}%
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="p-3 text-center text-muted">
+                        <i class="fas fa-info-circle fa-2x mb-2"></i>
+                        <p class="mb-0">No payment data available.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-calendar-alt me-1"></i>
+                Quick Reports
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('export_reports', type='sales') }}" class="btn btn-outline-primary text-start">
+                        <i class="fas fa-download me-2"></i> Export Sales Report
+                    </a>
+                    <a href="{{ url_for('export_reports', type='inventory') }}" class="btn btn-outline-primary text-start">
+                        <i class="fas fa-download me-2"></i> Export Inventory Report
+                    </a>
+                    <a href="#" class="btn btn-outline-primary text-start" data-bs-toggle="modal" data-bs-target="#customReportModal">
+                        <i class="fas fa-calendar me-2"></i> Custom Date Range
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Report Modal -->
+<div class="modal fade" id="customReportModal" tabindex="-1" aria-labelledby="customReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customReportModalLabel">Generate Custom Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="customReportForm" method="GET" action="{{ url_for('export_reports') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="type" id="reportType" value="sales">
+                    
+                    <div class="mb-3">
+                        <label for="reportTypeSelect" class="form-label">Report Type</label>
+                        <select class="form-select" id="reportTypeSelect">
+                            <option value="sales">Sales Report</option>
+                            <option value="inventory">Inventory Report</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="start_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="end_date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="includeDetails" name="include_details" checked>
+                        <label class="form-check-label" for="includeDetails">Include detailed transaction data</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-download me-1"></i> Download Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date inputs
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        // Format dates as YYYY-MM-DD
+        const formatDate = (date) => {
+            const d = new Date(date);
+            return d.toISOString().split('T')[0];
+        };
+        
+        // Set default dates in the modal
+        document.getElementById('startDate').value = formatDate(firstDay);
+        document.getElementById('endDate').value = formatDate(today);
+        
+        // Handle report type change
+        document.getElementById('reportTypeSelect').addEventListener('change', function() {
+            document.getElementById('reportType').value = this.value;
+        });
+        
+        // Export buttons
+        document.getElementById('exportSalesReport').addEventListener('click', function() {
+            window.location.href = "{{ url_for('export_reports', type='sales') }}";
+        });
+        
+        document.getElementById('exportInventoryReport').addEventListener('click', function() {
+            window.location.href = "{{ url_for('export_reports', type='inventory') }}";
+        });
+        
+        // Sales Chart
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(salesCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ dates|tojson|safe }},
+                datasets: [{
+                    label: 'Sales (₹)',
+                    data: {{ amounts|tojson|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Number of Sales',
+                    data: {{ counts|tojson|safe }},
+                    type: 'line',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointRadius: 3,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Sales (₹)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Sales'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    if (context.dataset.yAxisID === 'y') {
+                                        label += '₹' + context.parsed.y.toFixed(2);
+                                    } else {
+                                        label += context.parsed.y;
+                                    }
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

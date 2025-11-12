@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{% if edit %}Edit{% else %}Add{% endif %} Supplier - Medical Store{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{% if edit %}Edit{% else %}Add New{% endif %} Supplier</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('suppliers') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Suppliers
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-truck me-1"></i>
+                Supplier Information
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% if edit %}{{ url_for('edit_supplier', id=supplier.id) }}{% else %}{{ url_for('add_supplier') }}{% endif %}">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Supplier Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" value="{% if edit %}{{ supplier.name }}{% endif %}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="contact" class="form-label">Contact Person <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contact" name="contact" value="{% if edit %}{{ supplier.contact }}{% endif %}" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" value="{% if edit %}{{ supplier.email }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{% if edit %}{{ supplier.phone }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="2">{% if edit %}{{ supplier.address }}{% endif %}</textarea>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="gst_number" class="form-label">GST Number</label>
+                            <input type="text" class="form-control" id="gst_number" name="gst_number"
+                                   value="{% if edit %}{{ supplier.gst_number }}{% endif %}"
+                                   pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+                                   title="Please enter a valid GST number (e.g., 22AAAAA0000A1Z5)">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-undo me-1"></i> Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> {% if edit %}Update{% else %}Save{% endif %} Supplier
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

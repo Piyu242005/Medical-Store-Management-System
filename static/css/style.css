@@ -1,0 +1,385 @@
+/* ============================================
+   THEME VARIABLES & DEFAULTS (Dark+Purple)
+   ============================================ */
+
+:root {
+    /* Light Theme */
+    --light-bg-primary: #f8f9fa;
+    --light-bg-secondary: #ffffff;
+    --light-text-primary: #212529;
+    --light-text-secondary: #6c757d;
+    --light-border: #dee2e6;
+    --light-header-bg: #f8f9fc;
+    --light-accent: #007bff;
+    
+    /* Dark+Purple Theme (Default) */
+    --dark-purple-bg-primary: #1a1a2e;
+    --dark-purple-bg-secondary: #262641;
+    --dark-purple-text-primary: #e0e0e0;
+    --dark-purple-text-secondary: #b0b0c0;
+    --dark-purple-sidebar-bg: #0f0f1e;
+    --dark-purple-sidebar-header: linear-gradient(135deg, #1a237e 0%, #4d148c 100%);
+    --dark-purple-accent: #9370db;
+    --dark-purple-accent-light: #b19cd9;
+    --dark-purple-accent-hover: rgba(147, 112, 219, 0.3);
+    --dark-purple-border: rgba(147, 112, 219, 0.3);
+    
+    /* Dark+Red Theme */
+    --dark-red-bg-primary: #1a1515;
+    --dark-red-bg-secondary: #2a2025;
+    --dark-red-text-primary: #e8e8e8;
+    --dark-red-text-secondary: #c0c0c0;
+    --dark-red-sidebar-bg: #0f0a0a;
+    --dark-red-sidebar-header: linear-gradient(135deg, #5a1a1a 0%, #8b2323 100%);
+    --dark-red-accent: #d64545;
+    --dark-red-accent-light: #e8a0a0;
+    --dark-red-accent-hover: rgba(214, 69, 69, 0.3);
+    --dark-red-border: rgba(214, 69, 69, 0.3);
+    
+    /* Active Theme (default: dark-purple) */
+    --bg-primary: var(--dark-purple-bg-primary);
+    --bg-secondary: var(--dark-purple-bg-secondary);
+    --text-primary: var(--dark-purple-text-primary);
+    --text-secondary: var(--dark-purple-text-secondary);
+    --sidebar-bg: var(--dark-purple-sidebar-bg);
+    --sidebar-header: var(--dark-purple-sidebar-header);
+    --accent: var(--dark-purple-accent);
+    --accent-light: var(--dark-purple-accent-light);
+    --accent-hover: var(--dark-purple-accent-hover);
+    --border: var(--dark-purple-border);
+}
+
+/* Light Theme */
+body.theme-light {
+    --bg-primary: var(--light-bg-primary);
+    --bg-secondary: var(--light-bg-secondary);
+    --text-primary: var(--light-text-primary);
+    --text-secondary: var(--light-text-secondary);
+    --sidebar-bg: #ffffff;
+    --sidebar-header: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    --accent: var(--light-accent);
+    --accent-light: #80c0ff;
+    --accent-hover: rgba(0, 123, 255, 0.1);
+    --border: var(--light-border);
+}
+
+/* Dark+Red Theme */
+body.theme-dark-red {
+    --bg-primary: var(--dark-red-bg-primary);
+    --bg-secondary: var(--dark-red-bg-secondary);
+    --text-primary: var(--dark-red-text-primary);
+    --text-secondary: var(--dark-red-text-secondary);
+    --sidebar-bg: var(--dark-red-sidebar-bg);
+    --sidebar-header: var(--dark-red-sidebar-header);
+    --accent: var(--dark-red-accent);
+    --accent-light: var(--dark-red-accent-light);
+    --accent-hover: var(--dark-red-accent-hover);
+    --border: var(--dark-red-border);
+}
+
+/* ============================================
+   GENERAL STYLES
+   ============================================ */
+
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+    font-size: 0.9rem;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+
+#sidebar-wrapper {
+    min-height: 100vh;
+    margin-left: -15rem;
+    transition: margin 0.25s ease-out;
+    width: 15rem;
+    background-color: var(--sidebar-bg);
+}
+
+#sidebar-wrapper .sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+    background: var(--sidebar-header);
+    color: #fff;
+}
+
+#sidebar-wrapper .list-group {
+    width: 15rem;
+    background-color: var(--sidebar-bg);
+}
+
+#page-content-wrapper {
+    min-width: 100vw;
+    background-color: var(--bg-primary);
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+}
+
+.list-group-item {
+    border: none;
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+    background-color: var(--sidebar-bg);
+    color: var(--text-secondary);
+}
+
+.list-group-item i {
+    width: 20px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.list-group-item:hover, .list-group-item.active {
+    background-color: var(--accent-hover);
+    color: var(--accent-light);
+    border-left: 3px solid var(--accent);
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.card {
+    border: none;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(0, 0, 0, 0.15) !important;
+    margin-bottom: 1.5rem;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--accent-hover) 0%, rgba(0, 0, 0, 0.1) 100%);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    color: var(--accent-light);
+}
+
+/* ============================================
+   DASHBOARD CARDS
+   ============================================ */
+
+.icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 4rem;
+    width: 4rem;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bg-primary .icon-circle {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bg-success .icon-circle {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bg-warning .icon-circle {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+.table {
+    margin-bottom: 0;
+    color: var(--text-primary);
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    padding: 1rem;
+    background-color: var(--accent-hover);
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 0.75rem 1rem;
+    border-bottom-color: var(--border);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--accent-hover) !important;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-light);
+    border-color: var(--accent-light);
+}
+
+/* ============================================
+   LOGIN PAGE
+   ============================================ */
+
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   FORMS
+   ============================================ */
+
+.form-control, .form-select {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    background-color: var(--bg-secondary);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--bg-secondary);
+    border-color: var(--accent);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem var(--accent-hover);
+}
+
+.form-label {
+    color: var(--text-primary);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+    }
+
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+    }
+
+    .container-fluid {
+        padding: 1.5rem;
+    }
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+/* ============================================
+   ALERTS
+   ============================================ */
+
+.alert {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-light);
+}
+
+/* ============================================
+   THEME SWITCHER
+   ============================================ */
+
+.theme-switcher {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+
+.theme-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.theme-btn {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.theme-btn:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent);
+    color: var(--accent-light);
+}
+
+.theme-btn.active {
+    background-color: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
