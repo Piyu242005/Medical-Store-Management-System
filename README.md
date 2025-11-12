@@ -19,16 +19,19 @@ A lightweight, responsive web application designed to streamline operations for 
 ### 🖼️ Screenshots
 
 #### 🔐 Login Page
-![Login Interface](attachment:55XEnnrkp8oTQMZn8KJuM.jpeg)
+![Login Interface](ScreenShot/Screenshot_12-11-2025_202332_127.0.0.1.jpeg)
 
 #### 📊 Reports & Analytics Dashboard
-![Reports Dashboard](attachment:mRco1338QMwrnXrgF6qGs.jpeg)
+![Reports Dashboard](ScreenShot/Screenshot_12-11-2025_202237_127.0.0.1.jpeg)
 
 #### 💊 Medicine Inventory Table
-![Medicines Table](attachment:xCvPsd3MuzrDXbZGn8QLR.jpeg)
+![Medicines Table](ScreenShot/Screenshot_12-11-2025_202213_127.0.0.1.jpeg)
 
 #### 📋 Main Dashboard Overview
-![Main Dashboard](attachment:hvdZ2tunbUBVTZZ9BJJ9W.jpeg)
+![Main Dashboard](ScreenShot/Screenshot_12-11-2025_202154_127.0.0.1.jpeg)
+
+#### 🧩 Code Overview  
+![Code Overview](./ScreenShot/Screenshot_2025-11-12_203428.png)
 
 ---
 
