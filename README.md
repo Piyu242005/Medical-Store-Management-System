@@ -31,7 +31,7 @@ A lightweight, responsive web application designed to streamline operations for 
 ![Main Dashboard](ScreenShot/Screenshot_12-11-2025_202154_127.0.0.1.jpeg)
 
 #### 🧩 Code Overview  
-![Code Overview](./ScreenShot/Screenshot_2025-11-12_203428.png)
+![Code Overview](ScreenShot/code-overview.png)
 
 ---
 
