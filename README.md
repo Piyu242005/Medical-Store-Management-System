@@ -95,7 +95,7 @@ medical-store-app/
 
 **Piyush Ramteke**  
 Final-year BCA student | Project Lead – VidSnapAI & DNEST Interior Design Studio  
-🔗 [LinkedIn](https://www.linkedin.com/in/piyush-ramteke) | 📧 piyush@example.com
+🔗 [LinkedIn](https://www.linkedin.com/in/piyush-ramteke) | 📧 piyu.143247@gmail.com
 
 ---
 
